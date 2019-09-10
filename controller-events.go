@@ -184,14 +184,18 @@ func (c *HAProxyController) eventEndpoints(ns *Namespace, data *Endpoints) (upda
 			return updateRequired
 		}
 		if oldEndpoints.Equal(newEndpoints) {
+			log.Println("---M2")
 			return updateRequired
 		}
+
+		log.Println("---M3")
 		data.BackendName = oldEndpoints.BackendName
 		c.setModifiedStatusEndpoints(oldEndpoints, newEndpoints)
 		updateRequired = updateRequired || c.processEndpointIPs(newEndpoints)
+		log.Println("---M4: UpdateRequired? " + strconv.FormatBool(updateRequired))
 		ns.Endpoints[data.Service.Value] = newEndpoints
 	case ADDED:
-		log.Println("A1")
+		log.Println("---A1")
 		if old, ok := ns.Endpoints[data.Service.Value]; ok {
 			if !old.Equal(data) {
 				data.Status = MODIFIED
