@@ -178,11 +178,23 @@ func (c *HAProxyController) eventEndpoints(ns *Namespace, data *Endpoints) (upda
 	case MODIFIED:
 		log.Println("---M1")
 		newEndpoints := data
+
+		for k, v := range *newEndpoints.Addresses {
+			var status string = string(v.Status)
+			log.Println("New: " + k + ": " + v.IP + ", " + status)
+		}
+
 		oldEndpoints, ok := ns.Endpoints[data.Service.Value]
 		if !ok {
 			log.Println("Endpoints not registered with controller !", data.Service)
 			return updateRequired
 		}
+
+		for k, v := range *oldEndpoints.Addresses {
+			var status string = string(v.Status)
+			log.Println("Old: " + k + ": " + v.IP + ", " + status)
+		}
+
 		if oldEndpoints.Equal(newEndpoints) {
 			log.Println("---M2")
 			return updateRequired
